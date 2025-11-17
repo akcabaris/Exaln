@@ -1,0 +1,6 @@
+@Exaln_HostAddress = http://localhost:5119
+
+GET {{Exaln_HostAddress}}/
+Accept: application/json
+
+###
