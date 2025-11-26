@@ -1,5 +1,6 @@
 ﻿using Exaln.DBContext;
 using Exaln.Interfaces;
+using Exaln.Repository;
 using Exaln.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
@@ -48,6 +49,7 @@ builder.Services.AddAuthentication(options =>
 
 builder.Services.AddControllers();
 builder.Services.AddScoped<ITokenService, TokenService>();
+builder.Services.AddScoped<IIELTSReadingRepository, IELTSReadingRepository>(); 
 builder.Services.AddOpenApi();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c =>
