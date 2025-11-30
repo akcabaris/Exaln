@@ -1,5 +1,7 @@
 ﻿using Exaln.DBContext;
+using Exaln.Entities;
 using Exaln.Interfaces;
+using Exaln.Middleware;
 using Exaln.Repository;
 using Exaln.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -7,6 +9,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi;
+using StackExchange.Redis;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -15,13 +18,14 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
 options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-builder.Services.AddIdentity<IdentityUser, IdentityRole>( options =>
+builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
 {
-    options.Password.RequireDigit = true;
-    options.Password.RequireLowercase = true;
-    options.Password.RequireUppercase = true;
-    options.Password.RequiredLength = 8;
+    options.Password.RequireDigit = false;
+    options.Password.RequireLowercase = false;
+    options.Password.RequireUppercase = false;
+    options.Password.RequiredLength = 4;
     options.Password.RequiredUniqueChars = 1;
+    options.User.RequireUniqueEmail = true;
 }).AddEntityFrameworkStores<ApplicationDbContext>().AddDefaultTokenProviders();
 
 
@@ -35,6 +39,7 @@ builder.Services.AddAuthentication(options =>
 
 }).AddJwtBearer(options =>
 {
+    options.SaveToken = true;
     options.TokenValidationParameters = new TokenValidationParameters
     {
         ValidateIssuer = true,
@@ -49,13 +54,35 @@ builder.Services.AddAuthentication(options =>
 
 builder.Services.AddControllers();
 builder.Services.AddScoped<ITokenService, TokenService>();
-builder.Services.AddScoped<IIELTSReadingRepository, IELTSReadingRepository>(); 
+builder.Services.AddScoped<IIELTSReadingRepository, IELTSReadingRepository>();
 builder.Services.AddOpenApi();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c =>
 {
     c.SwaggerDoc("v1", new OpenApiInfo { Title = "My API", Version = "v1" });
 });
+
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowAll", policy =>
+    {
+        policy
+            .AllowAnyOrigin()
+            .AllowAnyHeader()
+            .AllowAnyMethod();
+    });
+});
+
+
+builder.Services.AddSingleton<IConnectionMultiplexer>(opt =>
+{
+    return ConnectionMultiplexer.Connect(builder.Configuration.GetConnectionString("Redis")!);
+});
+
+
+builder.Services.AddScoped<IRedisService, RedisService>();
+
+
 
 var app = builder.Build();
 
@@ -70,11 +97,16 @@ if (app.Environment.IsDevelopment())
 
 }
 
+
+app.UseCors("AllowAll");
+
 app.UseHttpsRedirection();
 
 app.UseAuthentication();
 
 app.UseAuthorization();
+
+app.UseMiddleware<TokenVersionValidationMiddleware>();
 
 app.MapControllers();
 
