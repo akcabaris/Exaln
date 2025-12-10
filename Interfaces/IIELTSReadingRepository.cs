@@ -1,9 +1,12 @@
-﻿using Exaln.Models;
+﻿using Exaln.Constants.Enums;
+using Exaln.DTOs.IELTSDTO;
+using Exaln.Models;
+using static Exaln.Constants.Enums.IELTSEnum;
 
 namespace Exaln.Interfaces
 {
     public interface IIELTSReadingRepository
     {
-        Task<IELTSExam?> GetExamByIdAsync(int examId);
+        Task<List<IELTSReadingSectionDTO>> GetIELTSExamReadingSectionListAsync(int examID);
     }
 }

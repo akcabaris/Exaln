@@ -16,6 +16,9 @@ namespace Exaln.Models
 
         public short? PartNo { get; set; }
 
+        [MaxLength(500)]
+        public string? SectionPartExplanation { get; set; }
+
         [ForeignKey("ReadingSectionID")]
         public IELTSReadingSection? ReadingSection { get; set; }
 

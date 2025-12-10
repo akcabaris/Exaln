@@ -2,6 +2,7 @@
 using Exaln.Entities;
 using Exaln.Interfaces;
 using Exaln.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using StackExchange.Redis;
@@ -110,6 +111,7 @@ public class AuthController : ControllerBase
 
 
     [HttpPost("logout")]
+    [Authorize]
     public async Task<IActionResult> Logout()
     {
         var refreshToken = Request.Cookies["refresh_token"];

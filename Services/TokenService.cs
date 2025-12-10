@@ -80,8 +80,8 @@ namespace Exaln.Services
                 {
                     Id = user.Id,
                     Email = user.Email!,
-                    FirstName = "",
-                    LastName = ""
+                    FirstName = user.FirstName,
+                    LastName = user.LastName,
                 }
             };
         }
