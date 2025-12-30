@@ -18,10 +18,24 @@ namespace Exaln.Controllers
         }
 
         [HttpGet("readingSections/{examID}")]
-        [Authorize]
+        //[Authorize]
         public async Task<IActionResult> GetReadingSections(int examID)
         {
-            var result = await _ieltsReadingRepository.GetIELTSExamReadingSectionListAsync(examID);
+            var result = await _ieltsReadingRepository.GetReadingSectionListAsync(examID);
+
+            return Ok(result);
+        }
+
+        [HttpGet("readingSectionParts/{sectionID}")]
+        //[Authorize]
+        public async Task<IActionResult> GetReadindSectionParts(int sectionID)
+        {
+            if (!ModelState.IsValid || sectionID < 1)
+            {
+                return BadRequest();
+            }
+
+            var result = await _ieltsReadingRepository.GetReadingSectionPartListAsync(sectionID);
 
             return Ok(result);
         }

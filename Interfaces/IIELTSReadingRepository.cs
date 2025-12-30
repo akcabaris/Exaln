@@ -7,6 +7,7 @@ namespace Exaln.Interfaces
 {
     public interface IIELTSReadingRepository
     {
-        Task<List<IELTSReadingSectionDTO>> GetIELTSExamReadingSectionListAsync(int examID);
+        Task<List<IELTSReadingSectionDTO>> GetReadingSectionListAsync(int examID);
+        Task<List<IELTSReadingSectionPartDTO>> GetReadingSectionPartListAsync(int readingSectionID);
     }
 }

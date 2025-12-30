@@ -10,13 +10,19 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi;
 using StackExchange.Redis;
+using System;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
 
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
-options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
+    {
+        options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection"));
+        options.LogTo(Console.WriteLine, LogLevel.Information).EnableSensitiveDataLogging();
+
+    }
+);
 
 builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
 {
