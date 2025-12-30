@@ -19,7 +19,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     {
         options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection"));
-        options.LogTo(Console.WriteLine, LogLevel.Information).EnableSensitiveDataLogging();
+        options.EnableSensitiveDataLogging();
 
     }
 );

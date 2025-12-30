@@ -7,7 +7,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Exaln.Migrations
 {
     /// <inheritdoc />
-    public partial class Reset : Migration
+    public partial class res : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -71,6 +71,24 @@ namespace Exaln.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Exam", x => x.ExamID);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "ExamAttempt",
+                schema: "IELTS",
+                columns: table => new
+                {
+                    ExamAttemptID = table.Column<Guid>(type: "uuid", nullable: false),
+                    ExamID = table.Column<int>(type: "integer", nullable: false),
+                    UserID = table.Column<string>(type: "character varying(36)", maxLength: 36, nullable: true),
+                    ExamStatusEnumID = table.Column<short>(type: "smallint", nullable: true),
+                    CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    UpdatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    SubmittedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ExamAttempt", x => x.ExamAttemptID);
                 });
 
             migrationBuilder.CreateTable(
@@ -205,6 +223,33 @@ namespace Exaln.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "ExamAttemptModule",
+                schema: "IELTS",
+                columns: table => new
+                {
+                    ExamAttemptModuleID = table.Column<Guid>(type: "uuid", nullable: false),
+                    ExamAttemptID = table.Column<Guid>(type: "uuid", nullable: true),
+                    ExamAttempModuleTypeID = table.Column<short>(type: "smallint", nullable: true),
+                    RawScore = table.Column<int>(type: "integer", nullable: true),
+                    BandScore = table.Column<decimal>(type: "numeric(3,1)", precision: 3, scale: 1, nullable: true),
+                    ProgressJson = table.Column<string>(type: "jsonb", nullable: true),
+                    CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    UpdatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    SubmittedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ExamAttemptModule", x => x.ExamAttemptModuleID);
+                    table.ForeignKey(
+                        name: "FK_ExamAttemptModule_ExamAttempt_ExamAttemptID",
+                        column: x => x.ExamAttemptID,
+                        principalSchema: "IELTS",
+                        principalTable: "ExamAttempt",
+                        principalColumn: "ExamAttemptID",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "ReadingSectionPart",
                 schema: "IELTS",
                 columns: table => new
@@ -213,7 +258,8 @@ namespace Exaln.Migrations
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     ReadingSectionID = table.Column<int>(type: "integer", nullable: true),
                     QuestionTypeEnumID = table.Column<short>(type: "smallint", nullable: true),
-                    PartNo = table.Column<short>(type: "smallint", nullable: true)
+                    PartNo = table.Column<short>(type: "smallint", nullable: true),
+                    SectionPartExplanation = table.Column<string>(type: "character varying(500)", maxLength: 500, nullable: true)
                 },
                 constraints: table =>
                 {
@@ -248,6 +294,37 @@ namespace Exaln.Migrations
                         principalSchema: "IELTS",
                         principalTable: "ReadingSectionPart",
                         principalColumn: "ReadingSectionPartID",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "ExamAttemptReadingAnswer",
+                schema: "IELTS",
+                columns: table => new
+                {
+                    ExamAttemptReadingAnswerID = table.Column<long>(type: "bigint", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    ExamAttemptModuleID = table.Column<Guid>(type: "uuid", nullable: false),
+                    ReadingQuestionID = table.Column<int>(type: "integer", nullable: false),
+                    Answer = table.Column<string>(type: "text", nullable: false, defaultValue: ""),
+                    AnsweredAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ExamAttemptReadingAnswer", x => x.ExamAttemptReadingAnswerID);
+                    table.ForeignKey(
+                        name: "FK_ExamAttemptReadingAnswer_ExamAttemptModule_ExamAttemptModul~",
+                        column: x => x.ExamAttemptModuleID,
+                        principalSchema: "IELTS",
+                        principalTable: "ExamAttemptModule",
+                        principalColumn: "ExamAttemptModuleID",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_ExamAttemptReadingAnswer_ReadingQuestion_ReadingQuestionID",
+                        column: x => x.ReadingQuestionID,
+                        principalSchema: "IELTS",
+                        principalTable: "ReadingQuestion",
+                        principalColumn: "ReadingQuestionID",
                         onDelete: ReferentialAction.Restrict);
                 });
 
@@ -289,6 +366,25 @@ namespace Exaln.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
+                name: "IX_ExamAttemptModule_ExamAttemptID",
+                schema: "IELTS",
+                table: "ExamAttemptModule",
+                column: "ExamAttemptID");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ExamAttemptReadingAnswer_ExamAttemptModuleID_ReadingQuestio~",
+                schema: "IELTS",
+                table: "ExamAttemptReadingAnswer",
+                columns: new[] { "ExamAttemptModuleID", "ReadingQuestionID" },
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ExamAttemptReadingAnswer_ReadingQuestionID",
+                schema: "IELTS",
+                table: "ExamAttemptReadingAnswer",
+                column: "ReadingQuestionID");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_ReadingQuestion_ReadingSectionPartID",
                 schema: "IELTS",
                 table: "ReadingQuestion",
@@ -326,7 +422,7 @@ namespace Exaln.Migrations
                 name: "AspNetUserTokens");
 
             migrationBuilder.DropTable(
-                name: "ReadingQuestion",
+                name: "ExamAttemptReadingAnswer",
                 schema: "IELTS");
 
             migrationBuilder.DropTable(
@@ -334,6 +430,18 @@ namespace Exaln.Migrations
 
             migrationBuilder.DropTable(
                 name: "AspNetUsers");
+
+            migrationBuilder.DropTable(
+                name: "ExamAttemptModule",
+                schema: "IELTS");
+
+            migrationBuilder.DropTable(
+                name: "ReadingQuestion",
+                schema: "IELTS");
+
+            migrationBuilder.DropTable(
+                name: "ExamAttempt",
+                schema: "IELTS");
 
             migrationBuilder.DropTable(
                 name: "ReadingSectionPart",

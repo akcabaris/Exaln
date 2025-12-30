@@ -17,7 +17,7 @@ namespace Exaln.Controllers
         }
 
         [HttpGet("exams/{examType}")]
-        [Authorize]
+        //[Authorize]
         public async Task<IActionResult> GetExams(ExamType examType)
         {
             var result = await _ieltsExamRepository.GetExamList(examType);

@@ -12,8 +12,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Exaln.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20251210134138_AddSectionPartExplanationColumnToIELTSReadingSectionPart")]
-    partial class AddSectionPartExplanationColumnToIELTSReadingSectionPart
+    [Migration("20251230212855_res")]
+    partial class res
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -100,6 +100,107 @@ namespace Exaln.Migrations
                         .HasDatabaseName("UserNameIndex");
 
                     b.ToTable("AspNetUsers", (string)null);
+                });
+
+            modelBuilder.Entity("Exaln.Entities.IELTSExamAttempt", b =>
+                {
+                    b.Property<Guid>("ExamAttemptID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime?>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int>("ExamID")
+                        .HasColumnType("integer");
+
+                    b.Property<short?>("ExamStatusEnumID")
+                        .HasColumnType("smallint");
+
+                    b.Property<DateTime?>("SubmittedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("UserID")
+                        .HasMaxLength(36)
+                        .HasColumnType("character varying(36)");
+
+                    b.HasKey("ExamAttemptID");
+
+                    b.ToTable("ExamAttempt", "IELTS");
+                });
+
+            modelBuilder.Entity("Exaln.Entities.IELTSExamAttemptModule", b =>
+                {
+                    b.Property<Guid>("ExamAttemptModuleID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<decimal?>("BandScore")
+                        .HasPrecision(3, 1)
+                        .HasColumnType("numeric(3,1)");
+
+                    b.Property<DateTime?>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<short?>("ExamAttempModuleTypeID")
+                        .HasColumnType("smallint");
+
+                    b.Property<Guid?>("ExamAttemptID")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("ProgressJson")
+                        .HasColumnType("jsonb");
+
+                    b.Property<int?>("RawScore")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime?>("SubmittedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.HasKey("ExamAttemptModuleID");
+
+                    b.HasIndex("ExamAttemptID");
+
+                    b.ToTable("ExamAttemptModule", "IELTS");
+                });
+
+            modelBuilder.Entity("Exaln.Entities.IELTSExamAttemptReadingAnswer", b =>
+                {
+                    b.Property<long>("ExamAttemptReadingAnswerID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("ExamAttemptReadingAnswerID"));
+
+                    b.Property<string>("Answer")
+                        .IsRequired()
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("text")
+                        .HasDefaultValue("");
+
+                    b.Property<DateTime?>("AnsweredAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid>("ExamAttemptModuleID")
+                        .HasColumnType("uuid");
+
+                    b.Property<int>("ReadingQuestionID")
+                        .HasColumnType("integer");
+
+                    b.HasKey("ExamAttemptReadingAnswerID");
+
+                    b.HasIndex("ReadingQuestionID");
+
+                    b.HasIndex("ExamAttemptModuleID", "ReadingQuestionID")
+                        .IsUnique();
+
+                    b.ToTable("ExamAttemptReadingAnswer", "IELTS");
                 });
 
             modelBuilder.Entity("Exaln.Models.IELTSExam", b =>
@@ -346,6 +447,35 @@ namespace Exaln.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
+            modelBuilder.Entity("Exaln.Entities.IELTSExamAttemptModule", b =>
+                {
+                    b.HasOne("Exaln.Entities.IELTSExamAttempt", "ExamAttempt")
+                        .WithMany("Modules")
+                        .HasForeignKey("ExamAttemptID")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.Navigation("ExamAttempt");
+                });
+
+            modelBuilder.Entity("Exaln.Entities.IELTSExamAttemptReadingAnswer", b =>
+                {
+                    b.HasOne("Exaln.Entities.IELTSExamAttemptModule", "ExamAttemptModule")
+                        .WithMany("ReadingAnswers")
+                        .HasForeignKey("ExamAttemptModuleID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Exaln.Models.IELTSReadingQuestion", "ReadingQuestion")
+                        .WithMany()
+                        .HasForeignKey("ReadingQuestionID")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("ExamAttemptModule");
+
+                    b.Navigation("ReadingQuestion");
+                });
+
             modelBuilder.Entity("Exaln.Models.IELTSReadingQuestion", b =>
                 {
                     b.HasOne("Exaln.Models.IELTSReadingSectionPart", "ReadingSectionPart")
@@ -425,6 +555,16 @@ namespace Exaln.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("Exaln.Entities.IELTSExamAttempt", b =>
+                {
+                    b.Navigation("Modules");
+                });
+
+            modelBuilder.Entity("Exaln.Entities.IELTSExamAttemptModule", b =>
+                {
+                    b.Navigation("ReadingAnswers");
                 });
 
             modelBuilder.Entity("Exaln.Models.IELTSExam", b =>

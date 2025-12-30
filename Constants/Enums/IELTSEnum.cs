@@ -24,5 +24,23 @@
             DiagramLabelCompletion = 13,
             ShortAnswerQuestions = 14
         }
+
+        public enum ExamStatus : short
+        {
+
+        }
+
+        public enum ExamAttempModuleType : short
+        {
+            Listening = 1,
+            Reading = 2,
+            Writing = 3,
+            Speaking = 4
+        }
+
+        public enum ExamAttemptModuleStatus : short
+        {
+
+        }
     }
 }

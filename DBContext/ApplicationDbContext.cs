@@ -1,8 +1,9 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using Exaln.Entities;
+using Exaln.Models;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
-using Exaln.Models;
-using Exaln.Entities;
+using System.Reflection.Emit;
 
 namespace Exaln.DBContext
 {
@@ -16,6 +17,9 @@ namespace Exaln.DBContext
         public DbSet<IELTSReadingSection> IELTSReadingSections { get; set; } = default!;
         public DbSet<IELTSReadingSectionPart> IELTSReadingSectionParts { get; set; } = default!;
         public DbSet<IELTSReadingQuestion> IELTSReadingQuestions { get; set; } = default!;
+        public DbSet<IELTSExamAttempt> IELTSExamAttempts { get; set; } = default!;
+        public DbSet<IELTSExamAttemptModule> IELTSExamAttemptModules { get; set; } = default!;
+        public DbSet<IELTSExamAttemptReadingAnswer> IELTSExamAttemptReadingAnswers { get; set; } = default!;
 
 
         protected override void OnModelCreating(ModelBuilder builder)
@@ -42,6 +46,57 @@ namespace Exaln.DBContext
                 .HasForeignKey(rq => rq.ReadingSectionPartID)
                 .IsRequired(false) 
                 .OnDelete(DeleteBehavior.Restrict);
+
+            builder.Entity<IELTSExamAttempt>(e =>
+            {
+                e.HasKey(x => x.ExamAttemptID);
+
+                e.Property(x => x.UserID)
+                 .HasMaxLength(36);
+
+                e.HasMany(x => x.Modules)
+                 .WithOne(m => m.ExamAttempt)
+                 .HasForeignKey(m => m.ExamAttemptID)
+                 .OnDelete(DeleteBehavior.Cascade);
+            });
+
+            builder.Entity<IELTSExamAttemptModule>(e =>
+            {
+                e.HasKey(x => x.ExamAttemptModuleID);
+
+                e.Property(x => x.BandScore)
+                 .HasPrecision(3, 1);
+
+                e.Property(x => x.ProgressJson)
+                 .HasColumnType("jsonb");
+            });
+
+            builder.Entity<IELTSExamAttemptReadingAnswer>(e =>
+            {
+                e.HasKey(x => x.ExamAttemptReadingAnswerID);
+
+                e.Property(x => x.Answer)
+                 .IsRequired()
+                 .HasDefaultValue("");
+
+                e.HasOne(x => x.ExamAttemptModule)
+                 .WithMany(m => m.ReadingAnswers)
+                 .HasForeignKey(x => x.ExamAttemptModuleID)
+                 .OnDelete(DeleteBehavior.Cascade);
+
+                e.HasOne(x => x.ReadingQuestion)
+                 .WithMany()
+                 .HasForeignKey(x => x.ReadingQuestionID)
+                 .OnDelete(DeleteBehavior.Restrict);
+
+                e.HasIndex(x => new { x.ExamAttemptModuleID, x.ReadingQuestionID })
+                 .IsUnique();
+            });
+
+            builder.Entity<IELTSReadingQuestion>(e =>
+            {
+                e.HasKey(x => x.ReadingQuestionID);
+            });
         }
     }
 }
