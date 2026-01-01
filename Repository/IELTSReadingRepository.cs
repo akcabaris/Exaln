@@ -1,7 +1,8 @@
 ﻿using Exaln.DBContext;
 using Exaln.DTOs.IELTSDTO;
 using Exaln.Interfaces;
-using Exaln.Models;
+using Exaln.Constants.Enums;
+
 using Microsoft.EntityFrameworkCore;
 
 namespace Exaln.Repository
@@ -53,7 +54,7 @@ namespace Exaln.Repository
                             q => new IELTSReadingQuestionDTO
                             {
                                 ReadingQuestionID = q.ReadingQuestionID,
-                                QuestionNo  = q.QuestionNo,
+                                QuestionNo = q.QuestionNo,
                                 QuestionText = q.QuestionText,
                             }
                         ).ToList()
@@ -63,6 +64,21 @@ namespace Exaln.Repository
 
 
             return readingSectionPartList;
+        }
+
+        public async Task<List<IELTSReadingPracticeDTO>> GetReadingPracticeListAsync(string userID, IELTSEnum.ExamType examType)
+        {
+            var examList = await _context.IELTSExams
+                .Where(x => x.ExamTypeEnumID == (short)examType)
+                .Select(x =>
+                    new IELTSReadingPracticeDTO
+                    {
+                        ExamID = x.ExamID
+                    })
+                .ToListAsync();
+
+
+            return examList;
         }
     }
 }

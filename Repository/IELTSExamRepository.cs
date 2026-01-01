@@ -23,7 +23,6 @@ namespace Exaln.Repository
                 .Select(e => new IELTSExamDTO
                 {
                     ExamID = e.ExamID,
-                    ExamTypeEnumID = e.ExamTypeEnumID,
                 }).ToListAsync();
 
             return examList;
