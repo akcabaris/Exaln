@@ -9,7 +9,7 @@ using StackExchange.Redis;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 
-[Route("api/[controller]")]
+[Route("auth/")]
 [ApiController]
 public class AuthController : ControllerBase
 {

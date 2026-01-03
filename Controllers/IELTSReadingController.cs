@@ -7,7 +7,7 @@ using static Exaln.Constants.Enums.IELTSEnum;
 
 namespace Exaln.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("ielts/")]
     [ApiController]
     public class IELTSReadingController : Controller
     {
@@ -20,7 +20,7 @@ namespace Exaln.Controllers
             _redis = redis;
         }
 
-        [HttpGet("readingSections/{examID}")]
+        [HttpGet("reading-sections/{examID}")]
         //[Authorize]
         public async Task<IActionResult> GetReadingSections(int examID)
         {
@@ -29,7 +29,7 @@ namespace Exaln.Controllers
             return Ok(result);
         }
 
-        [HttpGet("readingSectionParts/{sectionID}")]
+        [HttpGet("reading-section-parts/{sectionID}")]
         //[Authorize]
         public async Task<IActionResult> GetReadindSectionParts(int sectionID)
         {
@@ -43,7 +43,7 @@ namespace Exaln.Controllers
             return Ok(result);
         }
 
-        [HttpGet("readingPractices")]
+        [HttpGet("reading-practices")]
         //[Authorize]
         public async Task<IActionResult> GetReadingPractices()
         {
@@ -60,7 +60,7 @@ namespace Exaln.Controllers
             }
 
 
-            var result = await _ieltsReadingRepository.GetReadingPracticeListAsync(userId, ExamType.General_Training_Practice);
+            var result = await _ieltsReadingRepository.GetReadingPracticeListAsync(userId, ExamType.GeneralTrainingPractice);
 
             return Ok(result);
         }

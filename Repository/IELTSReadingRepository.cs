@@ -46,7 +46,7 @@ namespace Exaln.Repository
                     r => new IELTSReadingSectionPartDTO
                     {
                         PartNo = r.PartNo,
-                        ReadingSectionID = r.ReadingSectionID,
+                        //ReadingSectionID = r.ReadingSectionID,
                         QuestionTypeEnumID = r.QuestionTypeEnumID,
                         ReadingSectionPartID = r.ReadingSectionPartID,
                         SectionPartExplanation = r.SectionPartExplanation,

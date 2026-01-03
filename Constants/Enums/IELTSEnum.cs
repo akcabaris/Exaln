@@ -4,10 +4,10 @@
     {
         public enum ExamType : short
         {
-            Academic_Full = 1,
-            General_Training_Full = 2,
-            Academic_Practice = 3,
-            General_Training_Practice = 4,
+            AcademicFull = 1,
+            GeneralTrainingFull = 2,
+            AcademicPractice = 3,
+            GeneralTrainingPractice = 4,
         }
         public enum ReadingQuestionType : short
         {
@@ -29,7 +29,9 @@
 
         public enum ExamStatus : short
         {
-            Started =1,
+            NotStarted = 0,
+            InProgress = 1,
+            Completed = 2,
         }
 
         public enum ExamAttempModuleType : short
@@ -42,7 +44,9 @@
 
         public enum ExamAttemptModuleStatus : short
         {
-            Started = 1,
+            NotStarted = 0,
+            InProgress = 1,
+            Completed = 2,
         }
     }
 }
