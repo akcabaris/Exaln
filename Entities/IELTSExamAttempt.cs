@@ -17,7 +17,7 @@ namespace Exaln.Entities
 
         public DateTime? SubmittedAt { get; set; }
 
-        public List<IELTSExamAttemptModule> Modules { get; set; } = new List<IELTSExamAttemptModule>();
+        public ICollection<IELTSExamAttemptModule> AttemptModules { get; set; } = new List<IELTSExamAttemptModule>();
 
     }
 }

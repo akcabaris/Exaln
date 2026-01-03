@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Exaln.Entities;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Exaln.Models
@@ -17,5 +18,6 @@ namespace Exaln.Models
         public DateTimeOffset? UpdatedAt { get; set; } 
 
         public ICollection<IELTSReadingSection> ReadingSections { get; set; } = new List<IELTSReadingSection>();
+        public ICollection<IELTSExamAttempt> ExamAttemps { get; set; } = new List<IELTSExamAttempt>();
     }
 }

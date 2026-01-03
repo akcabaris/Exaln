@@ -62,7 +62,7 @@ builder.Services.AddControllers();
 builder.Services.AddScoped<ITokenService, TokenService>();
 builder.Services.AddScoped<IIELTSExamRepository, IELTSExamRepository>();
 builder.Services.AddScoped<IIELTSReadingRepository, IELTSReadingRepository>();
-builder.Services.AddScoped<IIELTSExamAttemptRepository, IELTSExamAttempRepository>();
+builder.Services.AddScoped<IIELTSExamAttemptRepository, IELTSExamAttemptRepository>();
 builder.Services.AddOpenApi();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c =>

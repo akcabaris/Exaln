@@ -17,11 +17,14 @@ namespace Exaln.Entities
 
         public string? ProgressJson { get; set; }
 
+        public int? remainingSeconds { get; set;  }
+
+        public short? ExamAttemptModuleStatusEnumID { get; set; }
+
         public DateTime? CreatedAt { get; set; }
         public DateTime? UpdatedAt { get; set; }
         public DateTime? SubmittedAt { get; set; }
-
         public IELTSExamAttempt? ExamAttempt { get; set; }
-        public List<IELTSExamAttemptReadingAnswer> ReadingAnswers { get; set; } = new List<IELTSExamAttemptReadingAnswer>();
+        public ICollection<IELTSExamAttemptReadingAnswer> ReadingAnswers { get; set; } = new List<IELTSExamAttemptReadingAnswer>();
     }
 }

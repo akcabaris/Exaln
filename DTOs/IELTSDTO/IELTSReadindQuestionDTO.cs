@@ -10,5 +10,8 @@ namespace Exaln.DTOs.IELTSDTO
 
         [MaxLength(1000)]
         public string? QuestionText { get; set; }
+        public string? UsersAnswer { get; set; }
+
+        public long ExamAttemptReadingAnswerID { get; set; }
     }
 }

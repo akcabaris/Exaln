@@ -6,8 +6,6 @@ namespace Exaln.DTOs.IELTSDTO
     {
         public int ReadingSectionPartID { get; set; }
 
-        public int? ReadingSectionID { get; set; }
-
         public short? QuestionTypeEnumID { get; set; }
 
         public short? PartNo { get; set; }

@@ -54,7 +54,7 @@ namespace Exaln.DBContext
                 e.Property(x => x.UserID)
                  .HasMaxLength(36);
 
-                e.HasMany(x => x.Modules)
+                e.HasMany(x => x.AttemptModules)
                  .WithOne(m => m.ExamAttempt)
                  .HasForeignKey(m => m.ExamAttemptID)
                  .OnDelete(DeleteBehavior.Cascade);

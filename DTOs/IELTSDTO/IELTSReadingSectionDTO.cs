@@ -18,5 +18,7 @@ namespace Exaln.DTOs.IELTSDTO
 
         [MaxLength(500)]
         public string? SectionExplanation { get; set; }
+
+        public List<IELTSReadingSectionPartDTO> SectionParts { get; set; } = new List<IELTSReadingSectionPartDTO>();
     }
 }

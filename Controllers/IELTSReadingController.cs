@@ -20,29 +20,6 @@ namespace Exaln.Controllers
             _redis = redis;
         }
 
-        [HttpGet("reading-sections/{examID}")]
-        //[Authorize]
-        public async Task<IActionResult> GetReadingSections(int examID)
-        {
-            var result = await _ieltsReadingRepository.GetReadingSectionListAsync(examID);
-
-            return Ok(result);
-        }
-
-        [HttpGet("reading-section-parts/{sectionID}")]
-        //[Authorize]
-        public async Task<IActionResult> GetReadindSectionParts(int sectionID)
-        {
-            if (!ModelState.IsValid || sectionID < 1)
-            {
-                return BadRequest();
-            }
-
-            var result = await _ieltsReadingRepository.GetReadingSectionPartListAsync(sectionID);
-
-            return Ok(result);
-        }
-
         [HttpGet("reading-practices")]
         //[Authorize]
         public async Task<IActionResult> GetReadingPractices()
