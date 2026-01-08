@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using StackExchange.Redis;
 using static Exaln.Constants.Enums.IELTSEnum;
+using static System.Collections.Specialized.BitVector32;
 
 namespace Exaln.Controllers
 {
@@ -46,7 +47,13 @@ namespace Exaln.Controllers
 
             var sectionList = await _ieltsExamAttemptRepository.GetReadingQuestionsAsync(examID, examAttemptID, examAttemptModule.ExamAttemptModuleID, examAttemptModule.remainingSeconds == ExamValues.readingExamSeconds);
 
-            return Ok(sectionList);
+            var response = new StartReadingExamResponseDTO
+            {
+                ExamAttemptModuleID = examAttemptModule.ExamAttemptModuleID,
+                Sections = sectionList
+            };
+
+            return Ok(response);
         }
 
         [HttpPost("save-users-answer")]
