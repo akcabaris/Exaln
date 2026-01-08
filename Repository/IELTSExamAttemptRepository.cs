@@ -69,7 +69,7 @@ namespace Exaln.Repository
             return examAttemptModule;
         }
 
-        public async Task<List<IELTSReadingSectionDTO>> GetReadingQuestions(int examID, Guid examAttemptID, Guid examAttemptModuleID, bool isExamAttemptNew)
+        public async Task<List<IELTSReadingSectionDTO>> GetReadingQuestionsAsync(int examID, Guid examAttemptID, Guid examAttemptModuleID, bool isExamAttemptNew)
         {
 
             var result = await _context.IELTSReadingSections
@@ -125,6 +125,47 @@ namespace Exaln.Repository
 
 
             return result;
+        }
+
+        public async Task SaveReadingQuestionUsersAnswerAsync(Guid examAttemptModuleID, string userID, int readingQuestionID, string? usersAnswer)
+        {
+            var examAttemptModule = await _context.IELTSExamAttemptModules
+                .Where(m => m.ExamAttemptModuleID == examAttemptModuleID
+                    && m.ExamAttemptModuleStatusEnumID == (short)IELTSEnum.ExamAttemptModuleStatus.InProgress)
+                .Include(m => m.ExamAttempt)
+                .Include(m => m.ReadingAnswers.Where(ra => ra.ReadingQuestionID == readingQuestionID))
+                .FirstOrDefaultAsync();
+
+            if (examAttemptModule != null && examAttemptModule.ExamAttempt != null
+                && examAttemptModule.ExamAttempt.UserID == userID)
+            {
+                if (examAttemptModule.ReadingAnswers.Count == 1)
+                {
+                    var answer = examAttemptModule.ReadingAnswers.First();
+
+                    answer.Answer = usersAnswer ?? "";
+                }
+                else if (examAttemptModule.ReadingAnswers.Count == 0)
+                {
+                    var answer = new IELTSExamAttemptReadingAnswer
+                    {
+                        ReadingQuestionID = readingQuestionID,
+                        ExamAttemptModuleID = examAttemptModuleID,
+                        AnsweredAt = DateTime.UtcNow,
+                        Answer = usersAnswer ?? "",
+
+                    };
+
+                    await _context.AddAsync(answer);
+                }
+                else if (examAttemptModule.ReadingAnswers.Count > 1)
+                {
+                    throw new InvalidOperationException("Duplicate reading answers detected.");
+                }
+
+                await _context.SaveChangesAsync();
+
+            }
         }
     }
 }

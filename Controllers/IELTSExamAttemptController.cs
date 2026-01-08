@@ -1,14 +1,17 @@
 ﻿using Exaln.Constants;
+using Exaln.DTOs.IELTSDTO;
+using Exaln.Entities;
 using Exaln.Interfaces;
 using Exaln.Repository;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using StackExchange.Redis;
 using static Exaln.Constants.Enums.IELTSEnum;
 
 namespace Exaln.Controllers
 {
-    [Route("ielts-attempt/[controller]")]
+    [Route("ielts-attempt/")]
     [ApiController]
     public class IELTSExamAttemptController : ControllerBase
     {
@@ -37,15 +40,42 @@ namespace Exaln.Controllers
                 return Unauthorized("Unauthorized.");
             }
 
-            var examAttemptID = await _ieltsExamAttemptRepository.GetOrStartExamAttemptAsync(examID,userId);
+            var examAttemptID = await _ieltsExamAttemptRepository.GetOrStartExamAttemptAsync(examID, userId);
 
             var examAttemptModule = await _ieltsExamAttemptRepository.GetOrStartExamAttemptModuleAsync(examAttemptID, ExamAttempModuleType.Reading, isTimed);
 
-            var sectionList = await _ieltsExamAttemptRepository.GetReadingQuestions(examID, examAttemptID, examAttemptModule.ExamAttemptModuleID, examAttemptModule.remainingSeconds == ExamValues.readingExamSeconds);
+            var sectionList = await _ieltsExamAttemptRepository.GetReadingQuestionsAsync(examID, examAttemptID, examAttemptModule.ExamAttemptModuleID, examAttemptModule.remainingSeconds == ExamValues.readingExamSeconds);
 
             return Ok(sectionList);
         }
 
+        [HttpPost("save-users-answer")]
+        //[Authorize]
+        public async Task<IActionResult> SaveUsersAnswer([FromBody] SaveReadingQuestionAnswerDTO dto)
+        {
+            try
+            {
+                var refreshToken = Request.Cookies["refresh_token"];
+                if (string.IsNullOrWhiteSpace(refreshToken))
+                    return Unauthorized("Refresh token missing");
 
+                var refreshKey = $"refresh:{refreshToken}";
+                var userId = await _redis.GetStringAsync(refreshKey);
+
+                if (userId == null)
+                {
+                    return Unauthorized("Unauthorized.");
+                }
+
+                await _ieltsExamAttemptRepository.SaveReadingQuestionUsersAnswerAsync(dto.ExamAttemptModuleID, userId, dto.QuestionID, dto.UsersAnswer);
+
+                return Ok(200);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest();
+            }
+
+        }
     }
 }
